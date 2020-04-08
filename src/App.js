@@ -8,9 +8,10 @@ import getSynonyms from "./common/http";
 
 class App extends Component {
 
+    inputRef;
     constructor(props) {
         super(props)
-        this.state = { content: '', synonyms: [] };
+        this.state = { content: '', synonyms: [], panelButtons: { b: false, i: false, u: false } };
     }
 
     async componentDidMount() {
@@ -22,7 +23,7 @@ class App extends Component {
         this.setState({ content })
     }
 
-    onClick = async () => {
+    handleDoubleClick = async () => {
         const word = window.getSelection().toString();
 
         if (word.length) {
@@ -31,13 +32,51 @@ class App extends Component {
         }
     }
 
-    formatButtonClicked = (buttonType) => {
-        document.execCommand(buttonType);
+    formatButtonClicked = (elementForWrap) => {
+
+        const selection = getSelection();
+        const range = selection.getRangeAt(0);
+
+        if (this.state.panelButtons[elementForWrap]) {
+            const element = document.createTextNode(selection.toString());
+
+            range.deleteContents();
+            range.insertNode(element);
+        }
+        else {
+            const selectedText = range.extractContents();
+            const element = document.createElement(elementForWrap);
+
+            element.appendChild(selectedText);
+            range.insertNode(element);
+        }
+
+        this.setState({ content: this.inputRef.innerHTML })
+    }
+
+    changeButtonState = buttonState => {
+        var panelButtons = { ...this.state.panelButtons };
+        panelButtons[buttonState] = !this.state.panelButtons[buttonState];
+
+        this.setState({ panelButtons });
     }
 
     replaceSynonym = word => {
-        document.execCommand('insertText', true, word)
-        this.setState({ synonyms: [] });
+        const selection = getSelection().getRangeAt(0);
+        const element = document.createTextNode(word);
+
+        selection.deleteContents()
+        selection.insertNode(element);
+
+        this.setState({ content: this.inputRef.innerHTML, synonyms: [] });
+    }
+
+    handleClick = (e) => {
+        this.setState({ panelButtons: { u: false, i: false, b: false } });
+    }
+
+    setRef = (ref) => {
+        this.inputRef = ref;
     }
 
     render() {
@@ -48,8 +87,17 @@ class App extends Component {
                 </header>
                 <main>
                     <Synonym synonyms={this.state.synonyms} replaceSynonym={this.replaceSynonym} />
-                    <ControlPanel formatButtonClicked={this.formatButtonClicked} />
-                    <FileZone content={this.state.content} onChange={this.onChange} onClick={this.onClick} />
+                    <ControlPanel
+                        formatButtonClicked={this.formatButtonClicked}
+                        panelButtons={this.state.panelButtons}
+                        changeButtonState={this.changeButtonState}
+                    />
+                    <FileZone
+                        content={this.state.content}
+                        onChange={this.onChange}
+                        setRef={this.setRef}
+                        handleClick={this.handleClick}
+                        handleDoubleClick={this.handleDoubleClick} />
                 </main>
             </div>
         );

@@ -5,15 +5,16 @@ class ControlPanel extends Component {
 
     handleClick(buttonType) {
         this.props.formatButtonClicked(buttonType);
+        this.props.changeButtonState(buttonType);
     }
 
     render() {
         return (
             <div id="control-panel">
                 <div id="format-actions">
-                    <button onClick={() => this.handleClick('bold')} className="format-action" type="button"><b>B</b></button>
-                    <button onClick={() => this.handleClick('italic')} className="format-action" type="button"><i>I</i></button>
-                    <button onClick={() => this.handleClick('underline')} className="format-action" type="button"><u>U</u></button>
+                    <button onClick={() => this.handleClick('b')} className={"format-action " + (this.props.panelButtons.b ? 'selected' : '')} type="button"><b>B</b></button>
+                    <button onClick={() => this.handleClick('i')} className={"format-action " + (this.props.panelButtons.i ? 'selected' : '')} type="button"><i>I</i></button>
+                    <button onClick={() => this.handleClick('u')} className={"format-action " + (this.props.panelButtons.u ? 'selected' : '')} type="button"><u>U</u></button>
                 </div>
             </div>
         );
