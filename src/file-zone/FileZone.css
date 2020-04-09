@@ -13,3 +13,15 @@
     background-color: #fff;
     border: 1px solid #e4dede;
 }
+.italic {
+    font-style: italic;
+} 
+.bold {
+    font-weight: bold;
+}
+.underline {
+    text-decoration: underline;
+}
+.item {
+    margin-right: 5px;
+}

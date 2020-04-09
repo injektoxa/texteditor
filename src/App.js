@@ -13,23 +13,23 @@ class App extends Component {
     }
 
     async componentDidMount() {
-        var content = await getMockText();
+        const content = await getMockText();
 
-        var result = content.split(' ').map((i, index) => {
+        const result = content.split(' ').map((i, index) => {
             return { b: false, i: false, u: false, text: i, key: index.toString() }
         });
 
         this.setState({ content: result });
     }
 
-    handleDoubleClick = async () => {
-        let key = this.getKey();
+    handleClick = async () => {
+        const key = this.getKey();
         const content = [...this.state.content]
-        
-        var selectedWord = content.find(w => w.key === key);
+
+        const selectedWord = content.find(w => w.key === key);
 
         if (selectedWord) {
-            let synonyms = await getSynonyms(selectedWord.text);
+            const synonyms = await getSynonyms(selectedWord.text);
             this.setState({ synonyms, selectedWord })
         }
     }
@@ -57,15 +57,11 @@ class App extends Component {
         this.setState({ content, synonyms: [] });
     }
 
-    handleClick = (e) => {
-        this.setState({ selectedWord: {} });
-    }
-
     getKey = () => {
-        let range = getSelection().getRangeAt(0);
-        let key = range.commonAncestorContainer.parentElement.getAttribute("key");
+        const range = getSelection().getRangeAt(0);
+        let key = range.commonAncestorContainer.parentElement.getAttribute("data-key");
         if (!key) {
-            key = range.startContainer.parentElement.getAttribute("key");
+            key = range.startContainer.parentElement.getAttribute("data-key");
         }
 
         return key;
@@ -79,14 +75,8 @@ class App extends Component {
                 </header>
                 <main>
                     <Synonym synonyms={this.state.synonyms} replaceSynonym={this.replaceSynonym} />
-                    <ControlPanel
-                        formatButtonClicked={this.formatButtonClicked}
-                        panelButtons={this.state.selectedWord}
-                    />
-                    <FileZone
-                        content={this.state.content || []}
-                        handleClick={this.handleClick}
-                        handleDoubleClick={this.handleDoubleClick} />
+                    <ControlPanel formatButtonClicked={this.formatButtonClicked} panelButtons={this.state.selectedWord} />
+                    <FileZone content={this.state.content || []} handleClick={this.handleClick} />
                 </main>
             </div>
         );

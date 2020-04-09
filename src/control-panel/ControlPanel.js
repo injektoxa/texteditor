@@ -1,23 +1,31 @@
-import React, { Component } from 'react';
+import React from 'react';
+import classNames from 'classnames';
 import './ControlPanel.css';
 
-class ControlPanel extends Component {
+export default ({ panelButtons, formatButtonClicked }) => {
 
-    handleClick(buttonType) {
-        this.props.formatButtonClicked(buttonType);
-    }
-
-    render() {
-        return (
-            <div id="control-panel">
-                <div id="format-actions">
-                    <button onClick={() => this.handleClick('b')} className={"format-action " + (this.props.panelButtons.b ? 'selected' : '')} type="button"><b>B</b></button>
-                    <button onClick={() => this.handleClick('i')} className={"format-action " + (this.props.panelButtons.i ? 'selected' : '')} type="button"><i>I</i></button>
-                    <button onClick={() => this.handleClick('u')} className={"format-action " + (this.props.panelButtons.u ? 'selected' : '')} type="button"><u>U</u></button>
-                </div>
+    return (
+        <div id="control-panel">
+            <div id="format-actions">
+                <button
+                    onClick={() => formatButtonClicked('b')}
+                    className={classNames('format-action', { 'selected': panelButtons.b })}
+                    type="button">
+                    <b>B</b>
+                </button>
+                <button
+                    onClick={() => formatButtonClicked('i')}
+                    className={classNames('format-action', { 'selected': panelButtons.i })}
+                    type="button">
+                    <i>I</i>
+                </button>
+                <button
+                    onClick={() => formatButtonClicked('u')}
+                    className={classNames('format-action', { 'selected': panelButtons.u })}
+                    type="button">
+                    <u>U</u>
+                </button>
             </div>
-        );
-    }
+        </div>
+    );
 }
-
-export default ControlPanel;
