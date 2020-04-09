@@ -8,8 +8,8 @@ export default ({ content, handleClick }) => {
     );
 
     return (
-        <div id="file-zone">
-            <div id="file"
+        <div className="file-zone">
+            <div className="file"
                 contentEditable
                 suppressContentEditableWarning
                 children={items}

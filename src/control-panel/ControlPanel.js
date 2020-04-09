@@ -5,8 +5,8 @@ import './ControlPanel.css';
 export default ({ panelButtons, formatButtonClicked }) => {
 
     return (
-        <div id="control-panel">
-            <div id="format-actions">
+        <div className="control-panel">
+            <div className="format-actions">
                 <button
                     onClick={() => formatButtonClicked('b')}
                     className={classNames('format-action', { 'selected': panelButtons.b })}
