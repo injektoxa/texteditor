@@ -5,7 +5,6 @@ class ControlPanel extends Component {
 
     handleClick(buttonType) {
         this.props.formatButtonClicked(buttonType);
-        this.props.changeButtonState(buttonType);
     }
 
     render() {

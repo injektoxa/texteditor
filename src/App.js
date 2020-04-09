@@ -7,76 +7,68 @@ import Synonym from "./synonym/Synonym";
 import getSynonyms from "./common/http";
 
 class App extends Component {
-
-    inputRef;
     constructor(props) {
         super(props)
-        this.state = { content: '', synonyms: [], panelButtons: { b: false, i: false, u: false } };
+        this.state = { content: '', synonyms: [], selectedWord: {} };
     }
 
     async componentDidMount() {
         var content = await getMockText();
-        this.setState({ content });
-    }
 
-    onChange = content => {
-        this.setState({ content })
+        var result = content.split(' ').map((i, index) => {
+            return { b: false, i: false, u: false, text: i, key: index.toString() }
+        });
+
+        this.setState({ content: result });
     }
 
     handleDoubleClick = async () => {
-        const word = window.getSelection().toString();
+        let key = this.getKey();
+        const content = [...this.state.content]
+        
+        var selectedWord = content.find(w => w.key === key);
 
-        if (word.length) {
-            let synonyms = await getSynonyms(word);
-            this.setState({ synonyms })
+        if (selectedWord) {
+            let synonyms = await getSynonyms(selectedWord.text);
+            this.setState({ synonyms, selectedWord })
         }
     }
 
-    formatButtonClicked = (elementForWrap) => {
+    formatButtonClicked = (action) => {
+        const content = [...this.state.content];
+        const key = this.state.selectedWord.key;
+        const selectedWord = content.find(w => w.key === key);
 
-        const selection = getSelection();
-        const range = selection.getRangeAt(0);
-
-        if (this.state.panelButtons[elementForWrap]) {
-            const element = document.createTextNode(selection.toString());
-
-            range.deleteContents();
-            range.insertNode(element);
+        if (selectedWord) {
+            selectedWord[action] = !selectedWord[action];
+            this.setState({ content })
         }
-        else {
-            const selectedText = range.extractContents();
-            const element = document.createElement(elementForWrap);
-
-            element.appendChild(selectedText);
-            range.insertNode(element);
-        }
-
-        this.setState({ content: this.inputRef.innerHTML })
-    }
-
-    changeButtonState = buttonState => {
-        var panelButtons = { ...this.state.panelButtons };
-        panelButtons[buttonState] = !this.state.panelButtons[buttonState];
-
-        this.setState({ panelButtons });
     }
 
     replaceSynonym = word => {
-        const selection = getSelection().getRangeAt(0);
-        const element = document.createTextNode(word);
+        const content = [...this.state.content];
+        const key = this.state.selectedWord.key;
+        const selectedWord = content.find(w => w.key === key);
 
-        selection.deleteContents()
-        selection.insertNode(element);
+        if (selectedWord) {
+            selectedWord.text = word;
+        }
 
-        this.setState({ content: this.inputRef.innerHTML, synonyms: [] });
+        this.setState({ content, synonyms: [] });
     }
 
     handleClick = (e) => {
-        this.setState({ panelButtons: { u: false, i: false, b: false } });
+        this.setState({ selectedWord: {} });
     }
 
-    setRef = (ref) => {
-        this.inputRef = ref;
+    getKey = () => {
+        let range = getSelection().getRangeAt(0);
+        let key = range.commonAncestorContainer.parentElement.getAttribute("key");
+        if (!key) {
+            key = range.startContainer.parentElement.getAttribute("key");
+        }
+
+        return key;
     }
 
     render() {
@@ -89,13 +81,10 @@ class App extends Component {
                     <Synonym synonyms={this.state.synonyms} replaceSynonym={this.replaceSynonym} />
                     <ControlPanel
                         formatButtonClicked={this.formatButtonClicked}
-                        panelButtons={this.state.panelButtons}
-                        changeButtonState={this.changeButtonState}
+                        panelButtons={this.state.selectedWord}
                     />
                     <FileZone
-                        content={this.state.content}
-                        onChange={this.onChange}
-                        setRef={this.setRef}
+                        content={this.state.content || []}
                         handleClick={this.handleClick}
                         handleDoubleClick={this.handleDoubleClick} />
                 </main>

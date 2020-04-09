@@ -1,25 +1,27 @@
 import React, { Component } from 'react';
 import './FileZone.css';
-import ContentEditable from 'react-contenteditable'
+
+const WithElement = (condition, children, element) => (condition ?
+    `<${element}>${children}</${element}>` : children
+);
 
 class FileZone extends Component {
-
-    handleChange = e => { this.props.onChange(e.target.value); };
-    handleClick = e => { this.props.handleClick(e) }
-    handleDoubleClick = (e) => { this.props.handleDoubleClick(e); }
+    handleClick = e => { this.props.handleClick(e); }
+    handleDoubleClick = e => { this.props.handleDoubleClick(e); }
 
     render() {
+        const text = i => '<span key=' + i.key + '>' + i.text + '</span>';
+        const content = this.props.content.map(i => WithElement(i.u, WithElement(i.i, WithElement(i.b, text(i), 'b'), 'i'), 'u'));
+
         return (
             <div id="file-zone">
-                <div id="file" >
-                    <ContentEditable
-                        innerRef={this.props.setRef}
-                        html={this.props.content}
-                        onChange={this.handleChange}
-                        onClick={this.handleClick}
-                        onDoubleClick={this.handleDoubleClick}
-                        id="content"
-                    />
+                <div id="file"
+                    contentEditable="true"
+                    onDoubleClick={this.handleDoubleClick}
+                    onClick={this.handleClick}
+                    dangerouslySetInnerHTML={{
+                        __html: content.join(" ")
+                    }} >
                 </div>
             </div>
         );
