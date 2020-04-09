@@ -12,6 +12,6 @@ Run `npm start` for a dev server.
 + Given files structure is not obligatory and could be changed
 
 ## How it works
-+ double click on a word to select it and apply styles or get synonyms.
++ click on a word to apply styles or get synonyms.
 
 
