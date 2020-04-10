@@ -22,12 +22,7 @@ class App extends Component {
         this.setState({ content: result });
     }
 
-    handleClick = async () => {
-        const key = this.getKey();
-        const content = [...this.state.content]
-
-        const selectedWord = content.find(w => w.key === key);
-
+    handleClick = async (selectedWord) => {
         if (selectedWord) {
             const synonyms = await getSynonyms(selectedWord.text);
             this.setState({ synonyms, selectedWord })
@@ -55,16 +50,6 @@ class App extends Component {
         }
 
         this.setState({ content, synonyms: [] });
-    }
-
-    getKey = () => {
-        const range = getSelection().getRangeAt(0);
-        let key = range.commonAncestorContainer.parentElement.getAttribute("data-key");
-        if (!key) {
-            key = range.startContainer.parentElement.getAttribute("data-key");
-        }
-
-        return key;
     }
 
     render() {
