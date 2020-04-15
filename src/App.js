@@ -1,71 +1,77 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
-import ControlPanel from "./control-panel/ControlPanel";
-import FileZone from "./file-zone/FileZone";
+import ControlPanel from './control-panel/ControlPanel';
+import FileZone from './file-zone/FileZone';
 import getMockText from './text.service';
-import Synonym from "./synonym/Synonym";
-import getSynonyms from "./common/http";
+import Synonym from './synonym/Synonym';
+import getSynonyms from './common/http';
 
-class App extends Component {
-    constructor(props) {
-        super(props)
-        this.state = { content: '', synonyms: [], selectedWord: {} };
-    }
+const App = () => {
+	const [content, setContent] = useState('');
+	const [synonyms, setSynonyms] = useState([]);
+	const [selectedWord, setSelectedWord] = useState({});
 
-    async componentDidMount() {
-        const content = await getMockText();
+	useEffect(async () => {
+		const content = await getMockText();
+		const result = content.split(' ').map((i, index) => {
+			return {
+				b: false,
+				i: false,
+				u: false,
+				text: i,
+				key: index.toString(),
+			};
+		});
 
-        const result = content.split(' ').map((i, index) => {
-            return { b: false, i: false, u: false, text: i, key: index.toString() }
-        });
+		setContent(result);
+	}, []);
 
-        this.setState({ content: result });
-    }
+	const handleClick = async (selectedWord) => {
+		if (selectedWord) {
+			const synonyms = await getSynonyms(selectedWord.text);
+			setSynonyms(synonyms);
+			setSelectedWord(selectedWord);
+		}
+	};
 
-    handleClick = async (selectedWord) => {
-        if (selectedWord) {
-            const synonyms = await getSynonyms(selectedWord.text);
-            this.setState({ synonyms, selectedWord })
-        }
-    }
+	const formatButtonClicked = (action) => {
+		const newContent = [...content];
+		const word = newContent.find((w) => w.key === selectedWord.key);
 
-    formatButtonClicked = (action) => {
-        const content = [...this.state.content];
-        const key = this.state.selectedWord.key;
-        const selectedWord = content.find(w => w.key === key);
+		if (word) {
+			word[action] = !word[action];
 
-        if (selectedWord) {
-            selectedWord[action] = !selectedWord[action];
-            this.setState({ content })
-        }
-    }
+			setContent(newContent);
+		}
+	};
 
-    replaceSynonym = word => {
-        const content = [...this.state.content];
-        const key = this.state.selectedWord.key;
-        const selectedWord = content.find(w => w.key === key);
+	const replaceSynonym = (text) => {
+		const newContent = [...content];
+		const word = newContent.find((w) => w.key === selectedWord.key);
 
-        if (selectedWord) {
-            selectedWord.text = word;
-        }
+		if (word) {
+			word.text = text;
+		}
 
-        this.setState({ content, synonyms: [] });
-    }
+		setContent(newContent);
+		setSynonyms([]);
+	};
 
-    render() {
-        return (
-            <div className="App">
-                <header>
-                    <span>Simple Text Editor</span>
-                </header>
-                <main>
-                    <Synonym synonyms={this.state.synonyms} replaceSynonym={this.replaceSynonym} />
-                    <ControlPanel formatButtonClicked={this.formatButtonClicked} panelButtons={this.state.selectedWord} />
-                    <FileZone content={this.state.content || []} handleClick={this.handleClick} />
-                </main>
-            </div>
-        );
-    }
-}
+	return (
+		<div className='App'>
+			<header>
+				<span>Simple Text Editor</span>
+			</header>
+			<main>
+				<Synonym synonyms={synonyms} replaceSynonym={replaceSynonym} />
+				<ControlPanel
+					formatButtonClicked={formatButtonClicked}
+					panelButtons={selectedWord}
+				/>
+				<FileZone content={content || []} handleClick={handleClick} />
+			</main>
+		</div>
+	);
+};
 
 export default App;
