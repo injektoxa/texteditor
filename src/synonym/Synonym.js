@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default ({ synonyms, replaceSynonym }) => {
+const Synonym = ({ synonyms, replaceSynonym }) => {
 	const handleClick = (e) => {
 		e.preventDefault();
 		replaceSynonym(e.target.innerText);
@@ -19,3 +19,5 @@ export default ({ synonyms, replaceSynonym }) => {
 		</div>
 	);
 };
+
+export default Synonym;

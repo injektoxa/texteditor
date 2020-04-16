@@ -2,7 +2,7 @@ import React from 'react';
 import './FileZone.css';
 import classNames from 'classnames';
 
-export default ({ content, handleClick }) => {
+const FileZone = ({ content, handleClick }) => {
 	const items = content.map((i) => (
 		<span
 			key={i.key}
@@ -28,3 +28,5 @@ export default ({ content, handleClick }) => {
 		</div>
 	);
 };
+
+export default FileZone;

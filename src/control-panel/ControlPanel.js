@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import './ControlPanel.css';
 
-export default ({ panelButtons, formatButtonClicked }) => {
+const ControlPanel = ({ panelButtons, formatButtonClicked }) => {
 	return (
 		<div className='control-panel'>
 			<div className='format-actions'>
@@ -27,7 +27,7 @@ export default ({ panelButtons, formatButtonClicked }) => {
 				<button
 					onClick={() => formatButtonClicked('u')}
 					className={classNames('format-action', {
-						selected: panelButtons.u
+						selected: panelButtons.u,
 					})}
 					type='button'
 				>
@@ -37,3 +37,5 @@ export default ({ panelButtons, formatButtonClicked }) => {
 		</div>
 	);
 };
+
+export default ControlPanel;
